@@ -839,12 +839,12 @@ class FastSerializer:
     # varbinary
     def readVarbinaryContent(self, cnt):
         if cnt == 0:
-            return array.array('c', [])
+            return array.array('B', [])
 
-        offset = cnt * struct.calcsize('c')
+        offset = cnt * struct.calcsize('B')
         val = self.read_buffer.unpack(self.varbinaryType(cnt), offset)
 
-        return array.array('c', val[0])
+        return array.array('B', val[0])
 
     def readVarbinary(self):
         # length preceeded (4 byte value) string
