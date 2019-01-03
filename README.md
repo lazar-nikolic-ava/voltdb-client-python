@@ -1,4 +1,10 @@
-Description
+## Installation
+
+Run the following commands:
+1. `./make_kit.sh <python_version>`
+2. `pip install /tmp/voltdb-client-python-<python_version>.tar.gz`
+
+## Description
 
 The VoltDB Python client library is a native Python implementation of the VoltDB
 wire protocol. It provides the functionality of connecting to a VoltDB server,
@@ -20,6 +26,7 @@ library is thread safe.
 Each VoltDB primitive type is mapped to a Python primitive type. The following
 table shows the mapping.
 
+```
    +------------------+
    |VoltDB   |Python  |
    |---------|--------|
@@ -32,6 +39,7 @@ table shows the mapping.
    |STRING   |string  |
    |DECIMAL  |decimal |
    +------------------+
+```
 
 Although Python does not distinguish between the different integer types, the
 size of the integer being serialized needs to fit the corresponding type.
@@ -43,8 +51,10 @@ VoltResponse object, which may or may not contain a list of VoltTable
 objects. In case of failure, a VoltException object may be included.
 
 
-API
+## API
 
+VoltDB types:
+```
 FastSerializer.VOLTTYPE_NULL
 FastSerializer.VOLTTYPE_TINYINT
 FastSerializer.VOLTTYPE_SMALLINT
@@ -56,25 +66,29 @@ FastSerializer.VOLTTYPE_TIMESTAMP
 FastSerializer.VOLTTYPE_DECIMAL
 FastSerializer.VOLTTYPE_DECIMAL_STRING
 FastSerializer.VOLTTYPE_VOLTTABLE
-    VoltDB types.
+```
 
-FastSerializer(host, port, username, password, dump_file)
+`FastSerializer(host, port, username, password, dump_file)`
+    
     Create a connection to host (string) on port (integer). If username (string)
     and password (string) is given, authenticate the client using them. If
     dump_file (string) is given, all the data received from and sent to the
     server will be written into the file pointed to by dump_file.
 
-FastSerializer.close()
+`FastSerializer.close()`
+    
     Closes the connection. No further use of the object is valid.
 
-VoltProcedure(fser, name, paramtypes)
+`VoltProcedure(fser, name, paramtypes)`
+    
     Create a procedure object which can be used to call the stored procedure
     name (string) with parameters of types paramtypes (list). The parameter
     types are defined in the FastSerializer class as VoltDB types. For parameter
     of type array, you specify the type in the same way as primitive types. fser
     is the FastSerializer object with a valid connection to the server.
 
-VoltProcedure.call(params, response, timeout)
+`VoltProcedure.call(params, response, timeout)`
+    
     Make a stored procedure invocation with the parameters params (list). The
     parameters has to match the types defined in the VoltProcedure
     constructor. If a parameter is an array, pass it in as a list. If response
@@ -84,56 +98,69 @@ VoltProcedure.call(params, response, timeout)
     timeout seconds has elapsed. A successful invocation will return a
     VoltReponse object.
 
-VoltResponse.status
+`VoltResponse.status`
+    
     The status code (integer) for a stored procedure invocation. For a list of
     status code, please refer to the VoltDB documentation.
 
-VoltResponse.statusString
+`VoltResponse.statusString`
+    
     A human-friendly string of the meaning of the status code.
 
-VoltResponse.roundtripTime
+`VoltResponse.roundtripTime`
+    
     The round-trip time (integer) of the invocation in milliseconds.
 
-VoltResponse.exception
+`VoltResponse.exception`
+    
     The VoltException object in case of failure, may be None.
 
-VoltResponse.tables
+`VoltResponse.tables`
+    
     A list of VoltTable objects as the result of the invocation. May be None.
 
-VoltException.type
+`VoltException.type`
+    
     The type of the VoltDB exception. Can be the following values,
     VOLTEXCEPTION_NONE, VOLTEXCEPTION_EEEXCEPTION, VOLTEXCEPTION_SQLEXCEPTION,
     VOLTEXCEPTION_CONSTRAINTFAILURE, VOLTEXCEPTION_GENERIC.
 
-VoltException.message
+`VoltException.message`
+    
     A string explaining the exception.
 
-VoltTable.columns
+`VoltTable.columns`
+    
     A list of VoltColumn objects, representing the columns in the table.
 
-VoltTable.tuples
+`VoltTable.tuples`
+    
     A list of rows in the table. A row a list of values deserialized in Python
     types.
 
-VoltColumn.type
+`VoltColumn.type`
+    
     The type of the column. A list of types is defined in the FastSerializer
     class.
 
-VoltColumn.name
+`VoltColumn.name`
+    
     The name of the column as a string.
 
 
-Example
+## Example
 
 The following example shows how to make a connection to a VoltDB server instance
 running on port 21212 on localhost, and make a single call to the stored
 procedure named "Select", which takes a single parameter of type string. Assume
 the server is not secure, so that it does not require authentication.
 
+```
     >>> client = FastSerializer("localhost", 21212)
     >>> proc = VoltProcedure(client, "Select", [FastSerializer.VOLTTYPE_STRING])
     >>> response = proc.call(["English"])
     >>> client.close()
     >>> print response
+```
 
 The output will be a human-readable form of the VoltResponse object.
